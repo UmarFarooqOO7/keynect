@@ -73,6 +73,11 @@ class UserResource extends Resource
                 TextColumn::make('location')
                     ->searchable()
                     ->sortable(),
+                TextColumn::make('roles.name')
+                    ->badge()
+                    ->color('success')
+                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->searchable(),
             ])
 
             ->actions([
