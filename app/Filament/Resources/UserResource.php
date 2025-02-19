@@ -5,6 +5,7 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\UserResource\Pages;
 use App\Filament\Resources\UserResource\RelationManagers;
 use App\Models\User;
+use Filament\Actions\Action;
 use Filament\Actions\DeleteAction;
 use Filament\Actions\EditAction;
 use Filament\Forms;
@@ -76,10 +77,24 @@ class UserResource extends Resource
                 TextColumn::make('roles.name')
                     ->badge()
                     ->color('success')
-                    ->formatStateUsing(fn ($state) => ucfirst($state))
+                    ->formatStateUsing(fn($state) => ucfirst($state))
                     ->searchable(),
             ])
-
+            ->filters([
+                Tables\Filters\SelectFilter::make('role')
+                    ->relationship('roles', 'name', function (Builder $query) {
+                        if (!auth()->user()->hasRole('super_admin')) {
+                            $query->where('name', '!=', 'super_admin');
+                        }
+                    })
+                    ->multiple()
+                    ->preload()
+            ])
+            ->filtersTriggerAction(
+                fn(\Filament\Tables\Actions\Action $action) => $action
+                    ->button()
+                    ->label('Filter'),
+            )
             ->actions([
                 Tables\Actions\EditAction::make()
                     ->modalHeading('Edit User')
