@@ -17,4 +17,32 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';
+
+Route::get('/optimize', function () {
+    if (!app()->environment('production')) {
+        return 'Only available in production';
+    }
+
+    try {
+        Artisan::call('optimize:clear');
+        Artisan::call('optimize');
+        Artisan::call('view:cache');
+        Artisan::call('config:cache');
+        Artisan::call('route:cache');
+        Artisan::call('event:cache');
+        Artisan::call('filament:cache-components');
+
+        return 'Application optimized successfully!';
+    } catch (Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+})->middleware([
+            'auth',
+            function ($request, $next) {
+                if (!auth()->user()->hasRole('super_admin')) {
+                    abort(403);
+                }
+                return $next($request);
+            }
+        ]);
