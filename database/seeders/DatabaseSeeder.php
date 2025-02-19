@@ -15,9 +15,23 @@ class DatabaseSeeder extends Seeder
     {
         // User::factory(10)->create();
 
-        User::factory()->create([
+        // run ShieldSeeder
+        $this->call(ShieldSeeder::class);
+
+        $user = User::factory()->create([
             'name' => 'Test User',
-            'email' => 'test@example.com',
+            'email' => 'user@demo.com',
         ]);
+
+        $user->assignRole('user');
+
+
+        // create super admin and assign all permissions
+        $user = User::factory()->create([
+            'name' => 'Super Admin',
+            'email' => 'superadmin@demo.com',
+        ]);
+
+        $user->assignRole('super_admin');
     }
 }

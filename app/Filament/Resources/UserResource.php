@@ -43,12 +43,26 @@ class UserResource extends Resource
                 TextInput::make('location')
                     ->nullable()
                     ->maxLength(255),
+                Forms\Components\CheckboxList::make('roles')
+                    ->relationship('roles', 'name', function (Builder $query) {
+                        if (!auth()->user()->hasRole('super_admin')) {
+                            $query->where('name', '!=', 'super_admin');
+                        }
+                    })
+                    ->searchable(),
             ]);
     }
 
     public static function table(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(function (Builder $query) {
+                if (!auth()->user()->hasRole('super_admin')) {
+                    $query->whereDoesntHave('roles', function ($q) {
+                        $q->where('name', 'super_admin');
+                    });
+                }
+            })
             ->columns([
                 TextColumn::make('name')
                     ->searchable()
@@ -83,6 +97,13 @@ class UserResource extends Resource
                                 TextInput::make('location')
                                     ->nullable()
                                     ->maxLength(255),
+                                Forms\Components\CheckboxList::make('roles')
+                                    ->relationship('roles', 'name', function (Builder $query) {
+                                        if (!auth()->user()->hasRole('super_admin')) {
+                                            $query->where('name', '!=', 'super_admin');
+                                        }
+                                    })
+                                    ->searchable(),
                             ]),
                     ]),
                 Tables\Actions\DeleteAction::make()
