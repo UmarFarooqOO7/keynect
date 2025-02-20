@@ -27,9 +27,7 @@ class UserResource extends Resource
     }
 
     public static function form(Form $form): Form
-    {
-        $randomPassword = bcrypt(Str::random(12));
-        
+    {        
         return $form
             ->schema([
                 TextInput::make('name')
@@ -44,7 +42,7 @@ class UserResource extends Resource
                     ->nullable()
                     ->maxLength(255),
                 Forms\Components\Hidden::make('password')
-                    ->default($randomPassword)
+                    ->default('12345678')
                     ->dehydrated(fn ($state) => filled($state)),
                 Forms\Components\CheckboxList::make('roles')
                     ->relationship('roles', 'name', function (Builder $query) {
@@ -121,7 +119,7 @@ class UserResource extends Resource
                                     ->nullable()
                                     ->maxLength(255),
                                 Forms\Components\Hidden::make('password')
-                                    ->default(fn() => bcrypt(Str::random(12)))
+                                    ->default('12345678')
                                     ->dehydrated(fn ($state) => filled($state)),
                                 Forms\Components\CheckboxList::make('roles')
                                     ->relationship('roles', 'name', function (Builder $query) {
@@ -157,6 +155,7 @@ class UserResource extends Resource
     {
         return [
             'index' => Pages\ListUsers::route('/'),
+            'create' => Pages\CreateUser::route('/create'),
         ];
     }
 }
