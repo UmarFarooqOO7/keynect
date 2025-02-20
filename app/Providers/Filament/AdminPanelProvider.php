@@ -36,6 +36,8 @@ class AdminPanelProvider extends PanelProvider
                 Profile::class,
                 isSimple: false,
             )
+            ->brandLogo(env('APP_LOGO'))
+            ->brandLogoHeight(env('APP_LOGO_WIDTH'))
             ->colors([
                 'primary' => '#1ABA9C',
                 'secondary' => '#294b33',
