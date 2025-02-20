@@ -13,6 +13,7 @@ use Filament\Tables;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Support\Str;
 
 class UserResource extends Resource
 {
@@ -20,8 +21,15 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
+    protected static function generateRandomPassword(): string
+    {
+        return Str::random(12);
+    }
+
     public static function form(Form $form): Form
     {
+        $randomPassword = bcrypt(Str::random(12));
+        
         return $form
             ->schema([
                 TextInput::make('name')
@@ -32,13 +40,12 @@ class UserResource extends Resource
                     ->email()
                     ->unique(User::class, 'email')
                     ->maxLength(255),
-                TextInput::make('password')
-                    ->required()
-                    ->password()
-                    ->minLength(8),
                 TextInput::make('location')
                     ->nullable()
                     ->maxLength(255),
+                Forms\Components\Hidden::make('password')
+                    ->default($randomPassword)
+                    ->dehydrated(fn ($state) => filled($state)),
                 Forms\Components\CheckboxList::make('roles')
                     ->relationship('roles', 'name', function (Builder $query) {
                         if (!auth()->user()->hasRole('super_admin')) {
@@ -110,14 +117,12 @@ class UserResource extends Resource
                                     ->email()
                                     ->unique(User::class, 'email', ignoreRecord: true)
                                     ->maxLength(255),
-                                TextInput::make('password')
-                                    ->password()
-                                    ->minLength(8)
-                                    ->dehydrated(fn($state) => filled($state))
-                                    ->required(false),
                                 TextInput::make('location')
                                     ->nullable()
                                     ->maxLength(255),
+                                Forms\Components\Hidden::make('password')
+                                    ->default(fn() => bcrypt(Str::random(12)))
+                                    ->dehydrated(fn ($state) => filled($state)),
                                 Forms\Components\CheckboxList::make('roles')
                                     ->relationship('roles', 'name', function (Builder $query) {
                                         if (!auth()->user()->hasRole('super_admin')) {
