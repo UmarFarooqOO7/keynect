@@ -21,11 +21,6 @@ class UserResource extends Resource
 
     protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
-    protected static function generateRandomPassword(): string
-    {
-        return Str::random(12);
-    }
-
     public static function form(Form $form): Form
     {
         return $form
