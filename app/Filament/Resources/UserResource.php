@@ -30,27 +30,34 @@ class UserResource extends Resource
     {
         return $form
             ->schema([
-                TextInput::make('name')
-                    ->required()
-                    ->maxLength(255),
-                TextInput::make('email')
-                    ->required()
-                    ->email()
-                    ->unique(User::class, 'email')
-                    ->maxLength(255),
-                TextInput::make('location')
-                    ->nullable()
-                    ->maxLength(255),
-                Forms\Components\Hidden::make('password')
-                    ->default('12345678')
-                    ->dehydrated(fn($state) => filled($state)),
-                Forms\Components\CheckboxList::make('roles')
-                    ->relationship('roles', 'name', function (Builder $query) {
-                        if (!auth()->user()->hasRole('super_admin')) {
-                            $query->where('name', '!=', 'super_admin');
-                        }
-                    })
-                    ->searchable(),
+                Grid::make(2)->schema([
+                    TextInput::make('name')
+                        ->required()
+                        ->maxLength(255),
+                    TextInput::make('email')
+                        ->required()
+                        ->email()
+                        ->unique(User::class, 'email')
+                        ->maxLength(255),
+                    TextInput::make('location')
+                        ->nullable()
+                        ->maxLength(255),
+                    Forms\Components\Hidden::make('password')
+                        ->default('12345678')
+                        ->dehydrated(fn($state) => filled($state)),
+                ]),
+                
+                Forms\Components\Section::make('Roles')
+                    ->schema([
+                        Forms\Components\CheckboxList::make('roles')
+                            ->relationship('roles', 'name', function (Builder $query) {
+                                if (!auth()->user()->hasRole('super_admin')) {
+                                    $query->where('name', '!=', 'super_admin');
+                                }
+                            })
+                            ->searchable()
+                            ->columns(3),
+                    ]),
             ]);
     }
 
@@ -105,29 +112,33 @@ class UserResource extends Resource
                 Tables\Actions\EditAction::make()
                     ->modalHeading('Edit User')
                     ->form([
-                        Grid::make(2)
+                        Grid::make(2)->schema([
+                            TextInput::make('name')
+                                ->required()
+                                ->maxLength(255),
+                            TextInput::make('email')
+                                ->required()
+                                ->email()
+                                ->unique(User::class, 'email', ignoreRecord: true)
+                                ->maxLength(255),
+                            TextInput::make('location')
+                                ->nullable()
+                                ->maxLength(255),
+                            Forms\Components\Hidden::make('password')
+                                ->default('12345678')
+                                ->dehydrated(fn($state) => filled($state)),
+                        ]),
+                        
+                        Forms\Components\Section::make('Roles')
                             ->schema([
-                                TextInput::make('name')
-                                    ->required()
-                                    ->maxLength(255),
-                                TextInput::make('email')
-                                    ->required()
-                                    ->email()
-                                    ->unique(User::class, 'email', ignoreRecord: true)
-                                    ->maxLength(255),
-                                TextInput::make('location')
-                                    ->nullable()
-                                    ->maxLength(255),
-                                Forms\Components\Hidden::make('password')
-                                    ->default('12345678')
-                                    ->dehydrated(fn($state) => filled($state)),
                                 Forms\Components\CheckboxList::make('roles')
                                     ->relationship('roles', 'name', function (Builder $query) {
                                         if (!auth()->user()->hasRole('super_admin')) {
                                             $query->where('name', '!=', 'super_admin');
                                         }
                                     })
-                                    ->searchable(),
+                                    ->searchable()
+                                    ->columns(3),
                             ]),
                     ]),
                 Tables\Actions\DeleteAction::make()
