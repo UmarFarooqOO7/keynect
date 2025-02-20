@@ -26,6 +26,7 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->sidebarWidth('15rem')
             ->login()
             ->registration()
             ->passwordReset()

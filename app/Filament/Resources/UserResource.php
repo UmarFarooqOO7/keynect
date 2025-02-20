@@ -27,7 +27,7 @@ class UserResource extends Resource
     }
 
     public static function form(Form $form): Form
-    {        
+    {
         return $form
             ->schema([
                 TextInput::make('name')
@@ -43,7 +43,7 @@ class UserResource extends Resource
                     ->maxLength(255),
                 Forms\Components\Hidden::make('password')
                     ->default('12345678')
-                    ->dehydrated(fn ($state) => filled($state)),
+                    ->dehydrated(fn($state) => filled($state)),
                 Forms\Components\CheckboxList::make('roles')
                     ->relationship('roles', 'name', function (Builder $query) {
                         if (!auth()->user()->hasRole('super_admin')) {
@@ -120,7 +120,7 @@ class UserResource extends Resource
                                     ->maxLength(255),
                                 Forms\Components\Hidden::make('password')
                                     ->default('12345678')
-                                    ->dehydrated(fn ($state) => filled($state)),
+                                    ->dehydrated(fn($state) => filled($state)),
                                 Forms\Components\CheckboxList::make('roles')
                                     ->relationship('roles', 'name', function (Builder $query) {
                                         if (!auth()->user()->hasRole('super_admin')) {
@@ -149,6 +149,11 @@ class UserResource extends Resource
         return [
             //
         ];
+    }
+
+    public static function getNavigationBadge(): ?string
+    {
+        return static::getModel()::count();
     }
 
     public static function getPages(): array
