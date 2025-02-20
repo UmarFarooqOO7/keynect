@@ -74,6 +74,12 @@ class UserResource extends Resource
                     ->color('success')
                     ->formatStateUsing(fn($state) => ucfirst($state))
                     ->searchable(),
+                Tables\Columns\BooleanColumn::make('email_verified_at')
+                    ->label('Verified')
+                    ->trueIcon('heroicon-o-check-circle')
+                    ->falseIcon('heroicon-o-x-circle')
+                    ->trueColor('success')
+                    ->falseColor('danger'),
             ])
             ->filters([
                 Tables\Filters\SelectFilter::make('role')

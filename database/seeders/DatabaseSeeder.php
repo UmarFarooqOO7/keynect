@@ -13,25 +13,22 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
-
         // run ShieldSeeder
         $this->call(ShieldSeeder::class);
 
         $user = User::factory()->create([
             'name' => 'Test User',
             'email' => 'user@demo.com',
+            'email_verified_at' => now(), // Mark as verified
         ]);
-
         $user->assignRole('user');
-
 
         // create super admin and assign all permissions
         $user = User::factory()->create([
             'name' => 'Super Admin',
             'email' => 'superadmin@demo.com',
+            'email_verified_at' => now(), // Mark as verified
         ]);
-
         $user->assignRole('super_admin');
     }
 }
